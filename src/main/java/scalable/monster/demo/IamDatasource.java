@@ -1,5 +1,6 @@
 package scalable.monster.demo;
 
+import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
 import software.amazon.awssdk.services.rds.RdsClient;
@@ -9,6 +10,11 @@ import software.amazon.awssdk.services.rds.model.GenerateAuthenticationTokenRequ
 import java.net.URI;
 
 public class IamDatasource extends HikariDataSource {
+
+  public IamDatasource(HikariConfig configuration) {
+    super(configuration);
+  }
+
   @Override
   public String getPassword() {
     // Alternatively, you can create a Bean declaration of RdsClient. For demo purposes, I have decided to instantiate it here.
