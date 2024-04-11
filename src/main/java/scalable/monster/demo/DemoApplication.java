@@ -1,6 +1,7 @@
 package scalable.monster.demo;
 
 import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,8 +9,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 
 import javax.sql.DataSource;
+import java.util.Objects;
+import java.util.Optional;
 
 @SpringBootApplication
 public class DemoApplication {
@@ -22,16 +26,23 @@ public class DemoApplication {
 
   @Bean
   HikariConfig hikariConfig(@Value("${spring.datasource.url}") String url,
-                            @Value("${spring.datasource.username}") String username) {
+                            @Value("${spring.datasource.username}") String username,
+                            @Value("${spring.datasource.password:#{null}}") Optional<String> password) {
     HikariConfig config = new HikariConfig();
     config.setJdbcUrl(url);
+    password.ifPresent(config::setPassword);
     config.setUsername(username);
     return config;
   }
 
   @Bean
-  public DataSource iamDatasource(HikariConfig hikariConfig) {
-    return new IamDatasource(hikariConfig);
+  public DataSource iamDatasource(HikariConfig hikariConfig,
+                                  @Value("${datasource:#{null}}") Optional<String> datasource) {
+    // FIXME: this should really be a profile
+    if (datasource.orElseGet(() -> "real").equals("real")) {
+      return new IamDatasource(hikariConfig);
+    }
+    return new HikariDataSource(hikariConfig);
   }
 
   @Bean
@@ -44,28 +55,28 @@ public class DemoApplication {
       repository.save(new Customer("David", "Palmer"));
       repository.save(new Customer("Michelle", "Dessler"));
 
-      // fetch all customers
-      log.info("Customers found with findAll():");
-      log.info("-------------------------------");
-      repository.findAll().forEach(customer -> {
-        log.info(customer.toString());
-      });
-      log.info("");
-
-      // fetch an individual customer by ID
-      Customer customer = repository.findById(1L);
-      log.info("Customer found with findById(1L):");
-      log.info("--------------------------------");
-      log.info(customer.toString());
-      log.info("");
-
-      // fetch customers by last name
-      log.info("Customer found with findByLastName('Bauer'):");
-      log.info("--------------------------------------------");
-      repository.findByLastName("Bauer").forEach(bauer -> {
-        log.info(bauer.toString());
-      });
-      log.info("");
+//      // fetch all customers
+//      log.info("Customers found with findAll():");
+//      log.info("-------------------------------");
+//      repository.findAll().forEach(customer -> {
+//        log.info(customer.toString());
+//      });
+//      log.info("");
+//
+//      // fetch an individual customer by ID
+//      Customer customer = repository.findById(1L);
+//      log.info("Customer found with findById(1L):");
+//      log.info("--------------------------------");
+//      log.info(customer.toString());
+//      log.info("");
+//
+//      // fetch customers by last name
+//      log.info("Customer found with findByLastName('Bauer'):");
+//      log.info("--------------------------------------------");
+//      repository.findByLastName("Bauer").forEach(bauer -> {
+//        log.info(bauer.toString());
+//      });
+//      log.info("");
     };
   }
 }
