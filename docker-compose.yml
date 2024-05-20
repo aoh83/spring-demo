@@ -18,5 +18,21 @@ services:
     #      size: 134217728 # 128*2^20 bytes = 128Mb
     environment:
       POSTGRES_PASSWORD: example
-      POSTGRES_USER: pg
-      POSTGRES_DB: tdb
+      POSTGRES_USER: postgres
+      POSTGRES_DB: odp
+#   db-init:
+#     image: aoh83/spring-init:latest
+#     depends_on:
+#       - db
+#     environment:
+#       # HOST DB
+#       PGPASSWORD: example
+#       PGUSER: postgres
+#       PGDB: postgres
+#       PGPORT: 5432
+#       # SPRING DB TO SETUP
+#       DB_USER: odp
+#       DB_DATABASE: odp
+
+
+

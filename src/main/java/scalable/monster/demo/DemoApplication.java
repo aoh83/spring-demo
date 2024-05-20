@@ -4,12 +4,14 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 import javax.sql.DataSource;
 import java.util.Objects;
@@ -36,12 +38,14 @@ public class DemoApplication {
   }
 
   @Bean
-  public DataSource iamDatasource(HikariConfig hikariConfig,
-                                  @Value("${datasource:#{null}}") Optional<String> datasource) {
-    // FIXME: this should really be a profile
-    if (datasource.orElseGet(() -> "real").equals("real")) {
-      return new IamDatasource(hikariConfig);
-    }
+  @Profile("prod")
+  public DataSource iamDatasource(HikariConfig hikariConfig) {
+    return new IamDatasource(hikariConfig);
+  }
+
+  @Bean
+  @Profile("dev")
+  public DataSource datasource(HikariConfig hikariConfig) {
     return new HikariDataSource(hikariConfig);
   }
 

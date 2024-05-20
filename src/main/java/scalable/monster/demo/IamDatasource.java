@@ -2,6 +2,8 @@ package scalable.monster.demo;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
 import software.amazon.awssdk.services.rds.RdsClient;
 import software.amazon.awssdk.services.rds.RdsUtilities;
@@ -10,6 +12,9 @@ import software.amazon.awssdk.services.rds.model.GenerateAuthenticationTokenRequ
 import java.net.URI;
 
 public class IamDatasource extends HikariDataSource {
+
+
+
 
   public IamDatasource(HikariConfig configuration) {
     super(configuration);
