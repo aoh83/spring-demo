@@ -1,5 +1,7 @@
 package scalable.monster.demo;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -8,18 +10,24 @@ import java.util.Collection;
 public class CustomerController {
 
   private final CustomerRepository customers;
+  private final Counter counter;
 
-  public CustomerController(final CustomerRepository customers) {
+  public CustomerController(final CustomerRepository customers, final MeterRegistry registry) {
     this.customers = customers;
+    this.counter = registry.counter ("customers.get");
+
   }
 
   @GetMapping("/customers")
   Collection<Customer> all() {
+
+    counter.increment(1);
     return customers.findAll();
   }
 
   @GetMapping("/customers/{id}")
   Customer one(@PathVariable Long id) {
+    counter.increment(1);
     return customers.findById(id).orElseThrow(() -> new IllegalArgumentException("customer not found: " + id));
   }
 
